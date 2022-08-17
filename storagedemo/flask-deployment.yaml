@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaskapi-deployment-sc
+  labels:
+    app: flaskapi-sc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flaskapi-sc
+  template:
+    metadata:
+      labels:
+        app: flaskapi-sc
+    spec:
+      containers:
+        - name: flaskapi-sc
+          image: phanindraregistry.azurecr.io/demoapp:v3
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: azurefileshare
+              mountPath: /var/log
+      imagePullSecrets:
+        - name: azcrsecret
+      volumes:
+        - name: azurefileshare
+          csi:
+            driver: file.csi.azure.com
+            readOnly: false
+            volumeAttributes:
+              secretName: azurefileshare-secret
+              shareName: aksshare
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service-sc
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: flaskapi-sc

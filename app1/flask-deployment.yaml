@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaskapi-deployment-v1
+  labels:
+    app: flaskapi-v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flaskapi-v1
+  template:
+    metadata:
+      labels:
+        app: flaskapi-v1
+    spec:
+      containers:
+        - name: flaskapi-v1
+          image: phanindraregistry.azurecr.io/demoapp:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+      imagePullSecrets:
+        - name: azcrsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service-v1
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: flaskapi-v1
