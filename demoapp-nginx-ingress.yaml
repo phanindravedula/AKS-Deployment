@@ -8,7 +8,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: demoapp1.southindia.cloudapp.azure.com
+    http:
       paths:
       - path: /app1
         pathType: Prefix
@@ -22,12 +23,5 @@ spec:
         backend:
           service:
             name: flask-service-v2
-            port:
-              number: 8000
-      - path: /app3
-        pathType: Prefix
-        backend:
-          service:
-            name: flask-service-sc
             port:
               number: 8000
